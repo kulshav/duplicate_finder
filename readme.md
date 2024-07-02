@@ -11,6 +11,8 @@ Fastapi microservice that helps to find duplicates in database
 2. **Create virtual environment:**
    
    ```bash
+   cd duplicate_finder
+   
    source .venv/bin/activate
    ```
    
