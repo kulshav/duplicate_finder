@@ -1,5 +1,3 @@
-from typing import NoReturn
-
 import numpy as np
 
 from loguru import logger
@@ -37,10 +35,10 @@ class DatabaseQuery(DatabaseCore):
 
     def insert_embeddings(
         self, 
-        table_model: ItemNoEng | ItemLoginom | Item | str,
+        table_model,
         sentence: str,
         embedding: np.array
-        ) -> NoReturn:
+        ):
 
         self._commit_query(
             insert(table_model)
@@ -54,7 +52,7 @@ class DatabaseQuery(DatabaseCore):
             self,
             table_model,
             data: list[dict]
-    ) -> None:
+    ):
         try:
             with self.session() as session:
                 session.bulk_insert_mappings(table_model, data)
@@ -79,6 +77,11 @@ class DatabaseQuery(DatabaseCore):
         
         return result.all()
 
+    def truncate_table(self, table_model):
+        result = self._commit_query(
+            text(f"TRUNCATE TABLE {str(table_model)}"))
+        return result
+    
     def fetch_all(self, table_model) -> list:
         result = self._execute_query(
             select(
@@ -88,9 +91,5 @@ class DatabaseQuery(DatabaseCore):
             )
         return result.all()
     
-    def truncate_table(self, table_model):
-        result = self._commit_query(text(f"TRUNCATE TABLE {str(table_model)}"))
-        return result
-
 
 db_query = DatabaseQuery(url=db_settings.database_url_syncpg, echo=db_settings.db_echo)
